@@ -15,6 +15,29 @@ function theme_enqueue_styles() {
 require_once( 'library_child/shortcode.php' );
 
 
+
+//▼rinkerのクレジット削除
+/**
+* Rinkerのクレジットを削除します
+*/
+function yyi_rinker_delete_credit_html_data( $meta_datas ) {
+	$meta_datas[ 'credit' ] = '';
+	return $meta_datas;
+}
+add_filter( 'yyi_rinker_meta_data_update',  'yyi_rinker_delete_credit_html_data', 200 );
+
+
+//▼rinkerrの購入ボタンに「から探す」を追加
+function yyi_rinker_custom_shop_labels( $attr ) {
+	$attr[ 'alabel' ]	= 'Amazonから探す';
+	$attr[ 'rlabel' ]	= '楽天から探す';
+	$attr[ 'ylabel' ]	= 'Yahooショッピングから探す';
+	return $attr;
+}
+add_action( 'yyi_rinker_update_attribute', 'yyi_rinker_custom_shop_labels' );
+
+
+
 // MOREタグの下に広告を表示
 add_filter('the_content', 'adMoreReplace');
 function adMoreReplace($contentData) {
@@ -105,7 +128,7 @@ $ad2 = <<< EOF
 EOF;
  
   if ( is_single() ) {//投稿ページかどうか判別
-    $cmBlock = '/<div class="reply">.+?/im';//正規表現でのコメント抽出ロジック
+    $cmBlock = '/<div class="reply">.+?/im';//正規表現でのコメント抽出ロジック　　ここがうまくいかないのよね
     if ( preg_match_all($cmBlock, $the_content, $cmBlocks )) {//$cmBlockで定義した内容を全部取得し、$cmBlocksに格納
       if ( $cmBlocks[0] ) {//チェックは不要と思うけど一応
         if ( $cmBlocks[0][3] ) {//3番目のcomment手前に広告を挿入
